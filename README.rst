@@ -93,6 +93,8 @@ TODO
 ----
 
 * Support for push notifications to update passes.
+* Add a model to keep the logs sent from devices. (Currently spits to the
+  log file of tryton).
 
 Implementations
 ---------------
