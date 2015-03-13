@@ -9,7 +9,7 @@ updates.
 Basics
 ------
 
-Creating tickets require you to have an apple developer account and a
+Creating passesti require you to have an apple developer account and a
 certificate issued by apple that can be used to sign/verify the passes.
 This section explains how you can get one and use it with this module.
 
