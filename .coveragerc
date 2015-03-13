@@ -1,0 +1,5 @@
+[run]
+source = trytond.modules.nereid_passbook
+
+[report]
+omit = */tests/*, */setup.py
