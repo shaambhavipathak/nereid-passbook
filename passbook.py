@@ -197,7 +197,7 @@ class Pass(ModelSQL, ModelView):
         regn.save()
         return '', 201
 
-    @route('/passbook/<version>/log', method=['POST'])
+    @route('/passbook/<version>/log', methods=['POST'])
     def log(cls, version=None):
         """
         Capture and then spit the logs to STDERR
