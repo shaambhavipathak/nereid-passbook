@@ -87,19 +87,20 @@ class Pass(ModelSQL, ModelView):
         """
         return self.origin.write_date or self.origin.create_date
 
-    def check_authorization(self):
+    def check_authorization(self, authorization=None):
         """
         Ensures that the authorization in the current request is valid.
         Aborts if its invalid.
 
-        This only checks in the headers as that is where the passbook app will
-        send it.
+        if authorization is None, check for the authorization header sent
+        by apple passbook.
         """
-        # validate the authentication token
-        # The Authorization header is supplied; its value is the word
-        # "ApplePass", followed by a space, followed by the
-        # authorization token as specified in the pass.
-        _, authorization = request.headers['Authorization'].split(' ')
+        if authorization is None:
+            # validate the authentication token
+            # The Authorization header is supplied; its value is the word
+            # "ApplePass", followed by a space, followed by the
+            # authorization token as specified in the pass.
+            _, authorization = request.headers['Authorization'].split(' ')
 
         if authorization != self.authentication_token:
             abort(401)
@@ -120,6 +121,21 @@ class Pass(ModelSQL, ModelView):
             config.get('nereid_passbook', 'key'),
             os.path.join(curr_dir, 'wwdr.pem'),
             '',     # Password for pem file ?
+        )
+
+    @route('/passbook/<int:active_id>', methods=['POST', 'GET'])
+    def download(self):
+        """
+        Download pk_pass file for the pass.
+        """
+        self.check_authorization(request.values['authentication_token'])
+        zipfile = self.make_pkpass()
+        zipfile.seek(0)
+        return send_file(
+            BytesIO(zipfile),
+            attachment_filename='pass.pkpass',
+            as_attachment=True,
+            mimetype='application/vnd.apple.pkpass'
         )
 
     @route('/passbook/<version>/passes/<pass_type>/<int:active_id>')
