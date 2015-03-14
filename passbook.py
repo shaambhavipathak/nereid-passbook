@@ -42,8 +42,14 @@ class Pass(ModelSQL, ModelView):
     )
 
     last_update = fields.Function(
-        fields.Datetime('Last Updated Date'), 'get_last_update'
+        fields.DateTime('Last Updated Date'), 'get_last_update'
     )
+
+    active = fields.Boolean('Active', select=True)
+
+    @staticmethod
+    def default_active():
+        return True
 
     @classmethod
     def get_origin(cls):
