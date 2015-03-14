@@ -13,7 +13,7 @@ from collections import defaultdict
 
 from trytond.model import ModelView, ModelSQL, fields
 from trytond.pool import PoolMeta, Pool
-from trytond.config import config
+from trytond.config import CONFIG
 from nereid import request, route, abort, jsonify
 from flask import send_file
 
@@ -117,8 +117,8 @@ class Pass(ModelSQL, ModelView):
 
         curr_dir = os.path.dirname(os.path.realpath(__file__))
         return passfile.create(
-            config.get('nereid_passbook', 'certificate'),
-            config.get('nereid_passbook', 'key'),
+            CONFIG.get('passbook_certificate'),
+            CONFIG.get('passbook_key'),
             os.path.join(curr_dir, 'wwdr.pem'),
             '',     # Password for pem file ?
         )
