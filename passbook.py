@@ -6,7 +6,7 @@
     :license: BSD, see LICENSE for more details.
 """
 import os
-import dateutil
+import dateutil.parser
 from io import BytesIO
 from uuid import uuid4
 from collections import defaultdict
