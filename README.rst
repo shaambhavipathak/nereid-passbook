@@ -6,6 +6,10 @@ Apple Passbook integration for Nereid.
 Easily create passbook passes and leave the rest to this module to handle
 updates.
 
+Screenshot
+------------
+.. image:: images/example.png
+
 Basics
 ------
 

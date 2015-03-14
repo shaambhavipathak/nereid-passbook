@@ -5,16 +5,15 @@
     :copyright: (c) 2015 by Openlabs Technologies & Consulting (P) Limited
     :license: BSD, see LICENSE for more details.
 """
-import os
 import dateutil.parser
-from io import BytesIO
 from uuid import uuid4
 from collections import defaultdict
 
 from trytond.model import ModelView, ModelSQL, fields
 from trytond.pool import PoolMeta, Pool
 from trytond.config import config
-from nereid import request, route, abort, jsonify
+from trytond.tools import file_open
+from nereid import request, route, abort, jsonify, url_for, redirect
 from flask import send_file
 
 
@@ -105,21 +104,33 @@ class Pass(ModelSQL, ModelView):
         if authorization != self.authentication_token:
             abort(401)
 
+    @route('/passbook')
+    def webservice_url(cls):
+        """
+        A dummy endpoint just for the sake of generating the webServiceURL
+        """
+        return redirect(url_for('nereid.website.home'))
+
     def make_pkpass(self):
         """
         Builds a pass by calling the origin model for it and then adds a serial
         number and signs it and builds the pkpass file.
         """
         passfile = self.origin.get_passfile()
+
+        # Add information to be provided by this API
         passfile.serialNumber = str(self.id)
+        passfile.webServiceURL = url_for(
+            'nereid.passbook.pass.webservice_url', _external=True, _secure=True
+        )
+        passfile.authenticationToken = self.authentication_token
 
         # TODO: What to do if barcode is not there ?
 
-        curr_dir = os.path.dirname(os.path.realpath(__file__))
         return passfile.create(
             config.get('nereid_passbook', 'certificate'),
             config.get('nereid_passbook', 'key'),
-            os.path.join(curr_dir, 'wwdr.pem'),
+            file_open('nereid_passbook/wwdr.pem').name,
             '',     # Password for pem file ?
         )
 
@@ -132,7 +143,7 @@ class Pass(ModelSQL, ModelView):
         zipfile = self.make_pkpass()
         zipfile.seek(0)
         return send_file(
-            BytesIO(zipfile),
+            zipfile,
             attachment_filename='pass.pkpass',
             as_attachment=True,
             mimetype='application/vnd.apple.pkpass'
@@ -151,7 +162,7 @@ class Pass(ModelSQL, ModelView):
         zipfile = self.make_pkpass()
         zipfile.seek(0)
         return send_file(
-            BytesIO(zipfile),
+            zipfile,
             attachment_filename='pass.pkpass',
             as_attachment=True,
             mimetype='application/vnd.apple.pkpass'
