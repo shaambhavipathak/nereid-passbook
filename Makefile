@@ -12,6 +12,6 @@ test-flake8:
 	flake8 .
 
 install-dependencies:
-	apt-get install python-m2crypto swig
+	sudo apt-get install python-m2crypto swig
 	CFLAGS=-O0 pip install lxml
 	pip install -r dev_requirements.txt
