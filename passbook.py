@@ -243,7 +243,7 @@ class Registration(ModelSQL, ModelView):
             if updated_since is not None and \
                     registration.pass_.last_update < updated_since:
                 # If updated_since is specified and the last_update of the
-                # pass is before it, there is nothign more to send
+                # pass is before it, there is nothing more to send
                 continue
             passes.add(registration.pass_)
 
