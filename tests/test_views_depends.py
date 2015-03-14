@@ -30,6 +30,7 @@ class TestViewsDepends(unittest.TestCase):
         """
         trytond.tests.test_tryton.install_module('nereid_passbook')
 
+    @unittest.skip('No views yet')
     def test0005views(self):
         '''
         Test views.
