@@ -6,7 +6,7 @@
     :license: BSD, see LICENSE for more details.
 """
 import os
-import dateutil
+import dateutil.parser
 from io import BytesIO
 from uuid import uuid4
 from collections import defaultdict
@@ -42,8 +42,14 @@ class Pass(ModelSQL, ModelView):
     )
 
     last_update = fields.Function(
-        fields.Datetime('Last Updated Date'), 'get_last_update'
+        fields.DateTime('Last Updated Date'), 'get_last_update'
     )
+
+    active = fields.Boolean('Active', select=True)
+
+    @staticmethod
+    def default_active():
+        return True
 
     @classmethod
     def get_origin(cls):
@@ -81,19 +87,20 @@ class Pass(ModelSQL, ModelView):
         """
         return self.origin.write_date or self.origin.create_date
 
-    def check_authorization(self):
+    def check_authorization(self, authorization=None):
         """
         Ensures that the authorization in the current request is valid.
         Aborts if its invalid.
 
-        This only checks in the headers as that is where the passbook app will
-        send it.
+        if authorization is None, check for the authorization header sent
+        by apple passbook.
         """
-        # validate the authentication token
-        # The Authorization header is supplied; its value is the word
-        # "ApplePass", followed by a space, followed by the
-        # authorization token as specified in the pass.
-        _, authorization = request.headers['Authorization'].split(' ')
+        if authorization is None:
+            # validate the authentication token
+            # The Authorization header is supplied; its value is the word
+            # "ApplePass", followed by a space, followed by the
+            # authorization token as specified in the pass.
+            _, authorization = request.headers['Authorization'].split(' ')
 
         if authorization != self.authentication_token:
             abort(401)
@@ -114,6 +121,21 @@ class Pass(ModelSQL, ModelView):
             config.get('nereid_passbook', 'key'),
             os.path.join(curr_dir, 'wwdr.pem'),
             '',     # Password for pem file ?
+        )
+
+    @route('/passbook/<int:active_id>', methods=['POST', 'GET'])
+    def download(self):
+        """
+        Download pk_pass file for the pass.
+        """
+        self.check_authorization(request.values['authentication_token'])
+        zipfile = self.make_pkpass()
+        zipfile.seek(0)
+        return send_file(
+            BytesIO(zipfile),
+            attachment_filename='pass.pkpass',
+            as_attachment=True,
+            mimetype='application/vnd.apple.pkpass'
         )
 
     @route('/passbook/<version>/passes/<pass_type>/<int:active_id>')
@@ -147,7 +169,7 @@ class Pass(ModelSQL, ModelView):
         :pass_type: The pass_type is ignored because serial number sent as
                     active_id is unique enough to identify the pass
         """
-        Registration = Pool().get('nereid.passbook.pass.registration')
+        Registration = Pool().get('nereid.passbook.registration')
 
         self.check_authorization()
         push_token = request.json['pushToken']
@@ -175,7 +197,7 @@ class Pass(ModelSQL, ModelView):
         regn.save()
         return '', 201
 
-    @route('/passbook/<version>/log', method=['POST'])
+    @route('/passbook/<version>/log', methods=['POST'])
     def log(cls, version=None):
         """
         Capture and then spit the logs to STDERR
@@ -187,7 +209,7 @@ class Pass(ModelSQL, ModelView):
 
 class Registration(ModelSQL, ModelView):
     "Pass Registrations"
-    __name__ = 'nereid.passbook.registeration'
+    __name__ = 'nereid.passbook.registration'
 
     pass_ = fields.Many2One(
         'nereid.passbook.pass', 'Pass', select=True, required=True
@@ -221,7 +243,7 @@ class Registration(ModelSQL, ModelView):
             if updated_since is not None and \
                     registration.pass_.last_update < updated_since:
                 # If updated_since is specified and the last_update of the
-                # pass is before it, there is nothign more to send
+                # pass is before it, there is nothing more to send
                 continue
             passes.add(registration.pass_)
 
