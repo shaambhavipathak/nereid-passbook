@@ -169,7 +169,7 @@ class Pass(ModelSQL, ModelView):
         :pass_type: The pass_type is ignored because serial number sent as
                     active_id is unique enough to identify the pass
         """
-        Registration = Pool().get('nereid.passbook.pass.registration')
+        Registration = Pool().get('nereid.passbook.registration')
 
         self.check_authorization()
         push_token = request.json['pushToken']
@@ -209,7 +209,7 @@ class Pass(ModelSQL, ModelView):
 
 class Registration(ModelSQL, ModelView):
     "Pass Registrations"
-    __name__ = 'nereid.passbook.registeration'
+    __name__ = 'nereid.passbook.registration'
 
     pass_ = fields.Many2One(
         'nereid.passbook.pass', 'Pass', select=True, required=True
