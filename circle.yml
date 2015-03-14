@@ -1,0 +1,14 @@
+machine:
+  python:
+    version: 2.7.5
+  services:
+    - docker
+dependencies:
+  pre:
+    - make install-dependencies
+test:
+  override:
+    - case $CIRCLE_NODE_INDEX in 0) make test-sqlite ;; 1) make test-postgres ;; 2) make test-flake8 ;; esac:
+        parallel: True
+  post:
+    - make test-flake8
