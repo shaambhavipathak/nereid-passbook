@@ -3,3 +3,4 @@
 
 coverage
 flake8
+https://github.com/devartis/passbook/archive/master.zip
