@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<tree string="Nereid Passbook">
+    <field name="origin" />
+    <field name="authentication_token" />
+    <field name="last_update"/>
+</tree>

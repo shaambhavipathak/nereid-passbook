@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<form string="Registrations" >
+    <label name="pass_"/>
+    <field name="pass_" colspan="3" />
+    <label name="device_library_identifier" />
+    <field name="device_library_identifier" />
+    <label name="push_token" /> 
+    <field name="push_token" /> 
+</form>   

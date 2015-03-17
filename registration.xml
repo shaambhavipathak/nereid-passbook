@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<tryton>
+    <data> 
+        <record model="ir.ui.view" id="nereid_passbook_registration_view_form">
+            <field name="model">nereid.passbook.registration</field>
+            <field name="type">form</field>
+            <field name="name">registration_form</field>
+        </record>
+        <record model="ir.ui.view" id="nereid_passbook_registration_view_tree">
+            <field name="model">nereid.passbook.registration</field>
+            <field name="type">tree</field>
+            <field name="name">registration_tree</field>
+        </record>
+        <record model="ir.action.act_window" id="act_nereid_passbook_registration_form">
+            <field name="name">Registration</field>
+            <field name="res_model">nereid.passbook.registration</field>
+        </record>
+        <record model="ir.action.act_window.view" id="act_nereid_passbook_registration_form_view1">
+            <field name="sequence" eval="10" />
+            <field name="view" ref="nereid_passbook_registration_view_tree" />
+            <field name="act_window" ref="act_nereid_passbook_registration_form" />
+        </record>
+        <record model="ir.action.act_window.view" id="act_nereid_passbook_registration_form_view2">
+            <field name="sequence" eval="20" />
+            <field name="view" ref="nereid_passbook_registration_view_form" />
+            <field name="act_window" ref="act_nereid_passbook_registration_form" />
+        </record>
+    </data>
+</tryton>

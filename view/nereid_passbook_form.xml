@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<form string="Nereid Passbook">
+    <label name="origin" />
+    <field name="origin" />
+    <label name="active" />
+    <field name="active" />
+    <label name="last_update" />
+    <field name="last_update"/> 
+    <label name="authentication_token" />
+    <field name="authentication_token" />  
+    <field name="registrations" colspan="4" />
+</form>

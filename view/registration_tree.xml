@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<tree string="Registrations" sequence="sequence" >
+    <field name="pass_" />
+    <field name="device_library_identifier" />
+    <field name="push_token" />
+</tree>
