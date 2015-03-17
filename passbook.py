@@ -37,7 +37,7 @@ class Pass(ModelSQL, ModelView):
     )
 
     registrations = fields.One2Many(
-        'nereid.passbook.pass.registration', 'pass', 'Registrations'
+        'nereid.passbook.registration', 'pass', 'Registrations'
     )
 
     last_update = fields.Function(
